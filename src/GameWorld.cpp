@@ -1,10 +1,21 @@
 #include "GameWorld.h"
 
+#include <climits>
+#include <optional>
 #include <unordered_map>
 
 namespace {
 
 constexpr size_t kNeighborReserveFactor = 4;
+
+std::optional<int64_t> SafeAdd(int64_t a, int64_t delta) {
+  if (delta > 0) {
+    if (a > INT64_MAX - delta) return std::nullopt;
+  } else if (delta < 0) {
+    if (a < INT64_MIN - delta) return std::nullopt;
+  }
+  return a + delta;
+}
 
 }
 
@@ -31,7 +42,11 @@ void GameWorld::Tick() {
         if (dx == 0 && dy == 0)
           continue;
 
-        Cell neighbor = {cell.x + dx, cell.y + dy};
+        auto neighbor_x = SafeAdd(cell.x, dx);
+        auto neighbor_y = SafeAdd(cell.y, dy);
+        if (!neighbor_x || !neighbor_y) continue;
+
+        Cell neighbor = {*neighbor_x, *neighbor_y};
         neighbor_counts[neighbor]++;
       }
     }

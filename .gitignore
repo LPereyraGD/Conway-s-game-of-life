@@ -39,3 +39,9 @@
 
 # debug information files
 *.dwo
+
+# Build Directories
+build/
+cmake-build-debug/
+.idea/
+.DS_Store
